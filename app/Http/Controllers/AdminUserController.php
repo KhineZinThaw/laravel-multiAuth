@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Admin\AdminLoginRequest;
 use App\Models\AdminUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +17,7 @@ class AdminUserController extends Controller
      */
     public function index()
     {
-        return "hi";
+        return view('admin-user.dashboard');
     }
 
     /**
@@ -31,7 +31,7 @@ class AdminUserController extends Controller
     }
 
     /**
-     * regsiter
+     * Admin Register
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -44,19 +44,20 @@ class AdminUserController extends Controller
             'password' => ['required', 'confirmed'],
         ]);
 
-        $admin = AdminUser::create([
+        AdminUser::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        Auth::guard('admin')->attempt($request->only('email', 'password'), $request->boolean('remember'));
+        Auth::guard('admin')->attempt($request->only('email', 'password'), 
+        $request->boolean('remember'));
 
         return redirect('/admin/dashboard');
     }
 
     /**
-     * Show the form for login
+     * Show the form for Admin login
      *
      * @return \Illuminate\Http\Response
      */
@@ -66,19 +67,14 @@ class AdminUserController extends Controller
     }
 
     /**
-     * Login
+     * Admin Login
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function login(LoginRequest $request)
+    public function login(AdminLoginRequest $request)
     {
-        $request->validate([
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
-        ]);
-
-        Auth::guard('admin')->attempt($request->only('email', 'password'), $request->boolean('remember'));
+        $request->authenticate();
 
         $request->session()->regenerate();
         
@@ -86,7 +82,7 @@ class AdminUserController extends Controller
     }
 
     /**
-     * Logout
+     * Admin Logout
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -99,6 +95,6 @@ class AdminUserController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return redirect('/admin/login');
     }
 }
