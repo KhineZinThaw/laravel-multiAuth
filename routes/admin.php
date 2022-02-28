@@ -1,13 +1,14 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AdminUserController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['auth:admin']], function() {
     Route::get('/admin/dashboard', [AdminUserController::class, 'index'])->name('admin.dashboard');
-    Route::get('/users', function() {
-        return "users";
-    });
+    Route::get('/admin/users', [UserController::class, 'index']);
+    Route::get('/admin/users/{id}/edit', [UserController::class, 'edit'])->middleware(['role:super-admin']);
+    Route::get('/admin/users/{id}', [UserController::class, 'destroy'])->middleware(['role:super-admin']);
 });
 
 Route::get('/admin/register', [AdminUserController::class, 'registerForm'])

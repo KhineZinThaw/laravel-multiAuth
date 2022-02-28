@@ -7,6 +7,8 @@ use App\Models\AdminUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class AdminUserController extends Controller
 {
@@ -44,7 +46,7 @@ class AdminUserController extends Controller
             'password' => ['required', 'confirmed'],
         ]);
 
-        AdminUser::create([
+        $admin = AdminUser::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
